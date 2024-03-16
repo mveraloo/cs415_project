@@ -1,14 +1,15 @@
 CREATE TABLE UserAccount (
     user_id INT NOT NULL AUTO_INCREMENT,
-    first_name VARCHAR(30),
-    last_name VARCHAR(30),
-    email VARCHAR(40),
-    username VARCHAR(40),
-    pass_word VARCHAR(40),
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    email VARCHAR(40) NOT NULL,
+    username VARCHAR(40) NOT NULL,
+    pass_word VARCHAR(40) NOT NULL,
     phone_number BIGINT NOT NULL,
     created_date DATETIME,
     is_active BOOLEAN,
-    PRIMARY KEY (user_id)
+    PRIMARY KEY (user_id),
+    UNIQUE(email)
 );
 CREATE TABLE UserProfile (
     user_profile_id INT NOT NULL AUTO_INCREMENT,
@@ -17,7 +18,7 @@ CREATE TABLE UserProfile (
     modified_date DATETIME,
     created_date DATETIME,
     PRIMARY KEY (user_profile_id),
-    FOREIGN KEY (user_id) REFERENCES UserAccount(user_id)
+    FOREIGN KEY (user_id) REFERENCES UserAccount(user_id),
 );
 
 CREATE TABLE Package (
@@ -39,31 +40,18 @@ CREATE TABLE Cart (
 
 
 
--- ALTER TABLE Cart
--- ADD FOREIGN KEY (user_id) REFERENCES UserProfile(user_id),
-
--- ALTER TABLE Cart
--- ADD FOREIGN KEY (package_id) REFERENCES Package(package_id);
-
--- ALTER TABLE Cart
--- ADD COLUMN package_id INT NOT NULL;
-
 CREATE TABLE Orders (
     order_id INT NOT NULL AUTO_INCREMENT,
     order_date DATETIME,
     cart_id INT NOT NULL,
+    user_id INT;
+    type_id INT;
     PRIMARY KEY (order_id),
     FOREIGN KEY (cart_id) REFERENCES Cart(cart_id)
+    FOREIGN KEY (user_id) REFERENCES UserAccount(user_id)
+    FOREIGN KEY (type_id) REFERENCES PaymentType(type_id)
 );
 
--- ALTER TABLE Orders
--- DROP COLUMN user_id;
-
-
--- ALTER TABLE Orders
--- DROP FOREIGN KEY Orders_ibfk_1;
--- ALTER TABLE Orders
--- ADD FOREIGN KEY (cart_id) REFERENCES Cart(cart_id);
 
 CREATE TABLE PaymentType (
     type_id INT NOT NULL AUTO_INCREMENT,
@@ -84,10 +72,6 @@ CREATE TABLE Payment (
     FOREIGN KEY (order_id) REFERENCES Orders(order_id)
 
 );
--- ALTER TABLE Payment
--- CHANGE COLUMN payment_type type_id INT NOT NULL;
--- ALTER TABLE Payment
--- ADD FOREIGN KEY (type_id) REFERENCES PaymentType(type_id);
 
 ALTER TABLE Payment
 ADD FOREIGN KEY (order_id) REFERENCES Orders(order_id);

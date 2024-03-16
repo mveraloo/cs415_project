@@ -21,3 +21,4 @@ INSERT INTO UserAccount (first_name,last_name,email,username,pass_word,phone_num
         now(),
         TRUE
     );
+
