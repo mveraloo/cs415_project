@@ -131,6 +131,18 @@ class Login(APIView):
                              'error': 'Incorrect password for user'},
                              status=status.HTTP_401_UNAUTHORIZED)
         user = Useraccount.objects.get(email = email, password=password)
+        if user is not None:
+            # jwt_token = JWTAuthentication.create_jwt(user)
+            # data = {
+            #     'token': jwt_token
+            # }
+            return Response({'success': True,
+                             'user_id': user.user_id},
+                             status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False,
+                             'error': 'Invalid Login Credentials'},
+                             status=status.HTTP_400_BAD_REQUEST)
     
 class GetSingleUserProfileAPIView(APIView):
     def get(self, request, id):
