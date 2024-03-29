@@ -86,6 +86,8 @@ class UseraccountAPIView(APIView):
         serializer = UseraccountSerializer(useraccounts, many=True)
         return Response({'useraccounts': serializer.data})
     def post(self, request, *args, **kwargs):
+        request.data['created_date'] = str(datetime.datetime.now())
+        request.data['is_active'] = 1
         serializer = UseraccountSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
