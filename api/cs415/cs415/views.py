@@ -1,4 +1,4 @@
-import datetime
+import datetime 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -112,7 +112,7 @@ class UserprofileAPIView(APIView):
 class Login(APIView):
     def post(self, request):
         email = request.data.get("email")
-        password = request.data.get("password")
+        password = request.data.get("pass_word")
 
         if not email or not password:
             return Response({'success': False,
@@ -125,12 +125,12 @@ class Login(APIView):
                              'error': 'User with this email does not exist'},
                              status=status.HTTP_404_NOT_FOUND)
 
-        check_pass = Useraccount.objects.filter(email = email, password=password).exists()
+        check_pass = Useraccount.objects.filter(email = email, pass_word=password).exists()
         if check_pass == False:
             return Response({'success': False,
                              'error': 'Incorrect password for user'},
                              status=status.HTTP_401_UNAUTHORIZED)
-        user = Useraccount.objects.get(email = email, password=password)
+        user = Useraccount.objects.get(email = email, pass_word=password)
         if user is not None:
             # jwt_token = JWTAuthentication.create_jwt(user)
             # data = {

@@ -64,14 +64,14 @@ class Paymenttype(models.Model):
 
 class Useraccount(models.Model):
     user_id = models.AutoField(primary_key=True)
-    first_name = models.CharField(max_length=30, blank=True, null=True)
-    last_name = models.CharField(max_length=30, blank=True, null=True)
-    email = models.CharField(max_length=40, blank=True, null=True)
+    first_name = models.CharField(max_length=30, blank=False, null=False)
+    last_name = models.CharField(max_length=30, blank=False, null=False)
+    email = models.CharField(max_length=40, blank=False, null=False)
     username = models.CharField(max_length=40, blank=True, null=True)
-    pass_word = models.CharField(max_length=40, blank=True, null=True)
+    pass_word = models.CharField(max_length=40, blank=False, null=False)
     phone_number = models.BigIntegerField()
-    created_date = models.DateTimeField(blank=True, null=True)
-    is_active = models.IntegerField(blank=True, null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.IntegerField(blank=True, null=False)
 
     class Meta:
         managed = False
@@ -83,7 +83,7 @@ class Userprofile(models.Model):
     user = models.ForeignKey(Useraccount, models.DO_NOTHING)
     profile_picture = models.CharField(max_length=50, blank=True, null=True)
     modified_date = models.DateTimeField(blank=True, null=True)
-    created_date = models.DateTimeField(blank=True, null=True)
+    created_date = models.DateTimeField(blank=True, null=False)
 
     class Meta:
         managed = False
