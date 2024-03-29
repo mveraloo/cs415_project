@@ -1,7 +1,0 @@
-version: 0.0
-os: linux
-files:
-  - source: api/cs415/
-    destination: /home/ubuntu/cs415_api/
-  
-file_exists_behavior: OVERWRITE
