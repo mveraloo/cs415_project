@@ -28,7 +28,8 @@ urlpatterns = [
     path('paymenttypes/', views.PaymenttypeAPIView.as_view()),
     path('useraccounts/', views.UseraccountAPIView.as_view()),
     path('userprofile/', views.UserprofileAPIView.as_view()),
-    path('userprofiles/userprofile/<int:id>/', views.GetSingleUserProfileAPIView.as_view()),
+    # path('userprofiles/userprofile/<int:id>/', views.GetSingleUserProfileAPIView.as_view()),
+    path('useraccounts/useraccount/<int:id>/', views.GetSingleUserAccountAPIView.as_view()),
     path('orders/order/<int:id>/', views.GetSingleOrderAPIView.as_view()),
 ]
 

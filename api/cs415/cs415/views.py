@@ -146,19 +146,45 @@ class Login(APIView):
                              'error': 'Invalid Login Credentials'},
                              status=status.HTTP_400_BAD_REQUEST)
     
-class GetSingleUserProfileAPIView(APIView):
+# class GetSingleUserProfileAPIView(APIView):
+#     def get(self, request, id):
+#             user_data = {}
+#             userprofile = Userprofile.objects.get(pk=id)
+#             userprofile_serializer = UserprofileSerializer(userprofile)
+#             user_data.update({"userprofile": userprofile_serializer.data})
+            
+#             # Retrieve related Useraccount
+#             useraccount_serializer = UseraccountSerializer(userprofile.user)
+#             user_data.update({"account": useraccount_serializer.data})
+
+#             # Retrieve related Cart
+#             cart = Cart.objects.filter(user_id=userprofile.user_id).first()  # Assuming one cart per user
+#             if cart:
+#                 cart_serializer = CartSerializer(cart)
+#                 user_data.update({"cart": cart_serializer.data})
+                
+#                 # Retrieve related Orders through the cart
+#                 orders = Orders.objects.filter(cart=cart)
+#                 orders_serializer = OrdersSerializer(orders, many=True)
+#                 user_data.update({"orders": orders_serializer.data})
+    
+            
+#             return Response(user_data)
+
+class GetSingleUserAccountAPIView(APIView):
     def get(self, request, id):
             user_data = {}
-            userprofile = Userprofile.objects.get(pk=id)
+            useraccounts = Useraccount.objects.get(pk=id)
+            useraccounts_serializer = UseraccountSerializer(useraccounts)
+            user_data.update({"useraccounts": useraccounts_serializer.data})
+            
+            # Retrieve related Userprofile
+            userprofile = Userprofile.objects.get(user=useraccounts.user_id) 
             userprofile_serializer = UserprofileSerializer(userprofile)
             user_data.update({"userprofile": userprofile_serializer.data})
-            
-            # Retrieve related Useraccount
-            useraccount_serializer = UseraccountSerializer(userprofile.user)
-            user_data.update({"account": useraccount_serializer.data})
 
             # Retrieve related Cart
-            cart = Cart.objects.filter(user_id=userprofile.user_id).first()  # Assuming one cart per user
+            cart = Cart.objects.filter(user_id=useraccounts.user_id).first()  # Assuming one cart per user
             if cart:
                 cart_serializer = CartSerializer(cart)
                 user_data.update({"cart": cart_serializer.data})
