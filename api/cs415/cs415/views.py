@@ -15,7 +15,9 @@ class CartAPIView(APIView):
         serializer = CartSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # user_id=request.user.id
             return Response({'data': serializer.data})
+            # return Response({'message': 'Item added to cart successfully'}, status=status.HTTP_201_CREATED)
         else:
             return Response({'errors': serializer.errors},
             status=status.HTTP_400_BAD_REQUEST)
@@ -146,55 +148,97 @@ class Login(APIView):
                              'error': 'Invalid Login Credentials'},
                              status=status.HTTP_400_BAD_REQUEST)
     
-class GetSingleUserProfileAPIView(APIView):
+# class GetSingleUserProfileAPIView(APIView):
+#     def get(self, request, id):
+#             user_data = {}
+#             userprofile = Userprofile.objects.get(pk=id)
+#             userprofile_serializer = UserprofileSerializer(userprofile)
+#             user_data.update({"userprofile": userprofile_serializer.data})
+            
+#             # Retrieve related Useraccount
+#             useraccount_serializer = UseraccountSerializer(userprofile.user)
+#             user_data.update({"account": useraccount_serializer.data})
+
+#             # Retrieve related Cart
+#             cart = Cart.objects.filter(user_id=userprofile.user_id).first()  # Assuming one cart per user
+#             if cart:
+#                 cart_serializer = CartSerializer(cart)
+#                 user_data.update({"cart": cart_serializer.data})
+                
+#                 # Retrieve related Orders through the cart
+#                 orders = Orders.objects.filter(cart=cart)
+#                 orders_serializer = OrdersSerializer(orders, many=True)
+#                 user_data.update({"orders": orders_serializer.data})
+    
+            
+#             return Response(user_data)
+
+class GetSingleUserAccountAPIView(APIView):
     def get(self, request, id):
             user_data = {}
-            userprofile = Userprofile.objects.get(pk=id)
-            userprofile_serializer = UserprofileSerializer(userprofile)
-            user_data.update({"userprofile": userprofile_serializer.data})
+            useraccounts = Useraccount.objects.get(pk=id)
+            useraccounts_serializer = UseraccountSerializer(useraccounts)
+            user_data.update({"useraccounts": useraccounts_serializer.data})
             
-            # Retrieve related Useraccount
-            useraccount_serializer = UseraccountSerializer(userprofile.user)
-            user_data.update({"account": useraccount_serializer.data})
+            # Retrieve related Userprofile
+            try: 
+                userprofile = Userprofile.objects.get(user=useraccounts.user_id) 
+                userprofile_serializer = UserprofileSerializer(userprofile)
+                user_data.update({"userprofile": userprofile_serializer.data})
+            except Userprofile.DoesNotExist:
+                pass
 
             # Retrieve related Cart
-            cart = Cart.objects.filter(user_id=userprofile.user_id).first()  # Assuming one cart per user
+            cart = Cart.objects.filter(user_id=useraccounts.user_id).first()  # Assuming one cart per user
             if cart:
                 cart_serializer = CartSerializer(cart)
                 user_data.update({"cart": cart_serializer.data})
                 
                 # Retrieve related Orders through the cart
                 orders = Orders.objects.filter(cart=cart)
-                orders_serializer = OrdersSerializer(orders, many=True)
-                user_data.update({"orders": orders_serializer.data})
-    
+                if orders: 
+                    orders_serializer = OrdersSerializer(orders, many=True)
+                    user_data.update({"orders": orders_serializer.data})
             
             return Response(user_data)
     
 class GetSingleOrderAPIView(APIView):
     def get(self, request, id):
-        order_data = {}
-        # Retrieve the order by its primary key
-        order = Orders.objects.get(pk=id)
+        user_data = {}
+        user = Useraccount.objects.get(pk=id)
+        user_serializer = UseraccountSerializer(user)
+        user_data.update({"useraccounts": user_serializer.data})
+
+        # order_data = {}
+        
+        # # Retrieve the order by its primary key
+        # order = Orders.objects.get(pk=id)
+        # order_serializer = OrdersSerializer(order)
+        # order_data.update({"orders": order_serializer.data})
+
+        # cart = order.cart
+        cart = Cart.objects.filter(user_id=user.user_id).first()
+        order = Orders.objects.get(cart= cart)
         order_serializer = OrdersSerializer(order)
-        order_data.update({"orders": order_serializer.data})
-        cart = order.cart
-        cart = order.cart
+        # order_data.update({"orders": order_serializer.data})
+        # user = Useraccount.objects.get(pk=cart.user_id)
+        # user_serializer = UseraccountSerializer(user)
+        
+        user_data.update({"orders": order_serializer.data})
         if cart:
             # Retrieve the package associated with the cart
             package_serializer = PackageSerializer(cart.package)
-            order_data.update({"package": package_serializer.data})
+            user_data.update({"package": package_serializer.data})
             
             # Retrieve the payment associated with the order
             payment = Payment.objects.filter(order_id=order.order_id).first()
             if payment:
                 payment_serializer = PaymentSerializer(payment)
-                order_data.update({"payment": payment_serializer.data})
+                user_data.update({"payment": payment_serializer.data})
                 
                 # Retrieve the payment type associated with the payment
                 payment_type = payment.type
                 if payment_type:
                     payment_type_serializer = PaymenttypeSerializer(payment_type)
-                    order_data.update({"payment_type": payment_type_serializer.data})
-        return Response(order_data)
-    
+                    user_data.update({"payment_type": payment_type_serializer.data})
+        return Response(user_data)
